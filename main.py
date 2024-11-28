@@ -55,14 +55,15 @@ async def get_wbs():
 @app.post("/wbs", tags=['Chargeability Manager'])
 async def post_wbs(wbs: schemas.WbsCreate):
     return execute_query("chargeability_manager", """
-    INSERT INTO wbs (wbs) VALUES (%s)
-    """, (wbs.wbs,))
+    INSERT INTO wbs (wbs, wbs_type, project_name, budget_mm, budget_tot) VALUES (%s, %s, %s, %s, %s)
+    """, (wbs.wbs, wbs.wbs_type, wbs.project_name, wbs.budget_mm, wbs.budget_tot))
 
 @app.put("/wbs/{wbs_id}", tags=['Chargeability Manager'])
-async def put_wbs(wbs_id: str):
+async def put_wbs(wbs_id: str, wbs: schemas.WbsUpdate):
     return execute_query("chargeability_manager", """
-    UPDATE wbs set wbs = %s where wbs = %s
-    """, (wbs_id, wbs_id))
+    UPDATE wbs set wbs_type = %s , project_name = %s, budget_mm = %s, budget_tot = %s 
+     where wbs = %s
+    """, (wbs.wbs_type, wbs.project_name, wbs.budget_mm, wbs.budget_tot, wbs_id))
 
 @app.delete("/wbs/{wbs_id}", tags=['Chargeability Manager'])
 async def delete_wbs(wbs_id: str):
