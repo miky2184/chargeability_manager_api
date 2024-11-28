@@ -9,6 +9,7 @@ import json
 from datetime import date
 from decimal import Decimal
 from core.config import Config
+from model.request import schemas
 
 app = FastAPI()
 app.add_middleware(
@@ -52,10 +53,10 @@ async def get_wbs():
     """)
 
 @app.post("/wbs", tags=['Chargeability Manager'])
-async def post_wbs():
+async def post_wbs(wbs: schemas.WbsCreate):
     return execute_query("chargeability_manager", """
     INSERT INTO wbs (wbs) VALUES (%s)
-    """, )
+    """, wbs.wbs)
 
 @app.put("/wbs/{wbs_id}", tags=['Chargeability Manager'])
 async def put_wbs(wbs_id: str):
