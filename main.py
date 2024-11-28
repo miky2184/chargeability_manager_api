@@ -83,7 +83,8 @@ def execute_query(schema_name: str, query: str, params: tuple = None) -> Respons
             cur.execute(f"SET search_path = {schema_name};")
             cur.execute(query, params)
 
-            result = cur.fetchall()
+            if cur:
+                result = cur.fetchall()
 
             conn.commit()
 
