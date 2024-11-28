@@ -37,20 +37,20 @@ async def get_chargeability():
     return execute_query("chargeability_manager", """
             SELECT eid, work_hh, chg, hh_no_chg_to_assign 
             FROM check_forecast
-            """)
+            """, exec_ddl=False)
 
 
 @app.get("/time-reports", tags=['Chargeability Manager'])
 async def get_time_reports():
     return execute_query("chargeability_manager", """
     SELECT * FROM report_tr_mm
-    """)
+    """, exec_ddl=False)
 
 @app.get("/wbs", tags=['Chargeability Manager'])
 async def get_wbs():
     return execute_query("chargeability_manager", """
     SELECT wbs, wbs_type, project_name, budget_mm, budget_tot, true as salvata FROM wbs
-    """)
+    """, exec_ddl=False)
 
 @app.post("/wbs", tags=['Chargeability Manager'])
 async def post_wbs(wbs: schemas.WbsCreate):
@@ -71,7 +71,7 @@ async def delete_wbs(wbs_id: str):
     """, (wbs_id,))
 
 
-def execute_query(schema_name: str, query: str, params: tuple = None) -> Response:
+def execute_query(schema_name: str, query: str, params: tuple = None, exec_ddl: bool = True) -> Response:
     """
         Esegue una query SQL su uno schema specifico e restituisce una risposta JSON.
     """
@@ -84,10 +84,10 @@ def execute_query(schema_name: str, query: str, params: tuple = None) -> Respons
             cur.execute(f"SET search_path = {schema_name};")
             cur.execute(query, params)
 
-            if cur:
+            if not exec_ddl:
                 result = cur.fetchall()
-
-            conn.commit()
+            else:
+                conn.commit()
 
         return Response(json.dumps(result, default=default_converter), media_type="application/json")
     except Exception as e:
