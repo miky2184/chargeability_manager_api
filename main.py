@@ -48,7 +48,7 @@ async def get_time_reports():
 @app.get("/wbs", tags=['Chargeability Manager'])
 async def get_wbs():
     return execute_query("chargeability_manager", """
-    SELECT wbs, wbs_type, project_name, budget_mm, budget_tot FROM wbs
+    SELECT wbs, wbs_type, project_name, budget_mm, budget_tot, true as salvata FROM wbs
     """)
 
 @app.post("/wbs", tags=['Chargeability Manager'])
@@ -60,7 +60,7 @@ async def post_wbs():
 @app.put("/wbs/{wbs_id}", tags=['Chargeability Manager'])
 async def put_wbs(wbs_id: str):
     return execute_query("chargeability_manager", """
-    UPDATE report_tr_mm set wbs = %s where wbs = %s
+    UPDATE wbs set wbs = %s where wbs = %s
     """, (wbs_id, wbs_id))
 
 @app.delete("/wbs/{wbs_id}", tags=['Chargeability Manager'])
