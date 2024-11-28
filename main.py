@@ -56,7 +56,7 @@ async def get_wbs():
 async def post_wbs(wbs: schemas.WbsCreate):
     return execute_query("chargeability_manager", """
     INSERT INTO wbs (wbs) VALUES (%s)
-    """, wbs.wbs)
+    """, (wbs.wbs,))
 
 @app.put("/wbs/{wbs_id}", tags=['Chargeability Manager'])
 async def put_wbs(wbs_id: str):
