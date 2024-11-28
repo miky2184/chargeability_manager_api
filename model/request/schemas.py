@@ -7,7 +7,7 @@ class WbsBase(BaseModel):
     project_name: Optional[str]
     budget_mm: Optional[float]
     budget_tot: Optional[float]
-    salvata: Optional[bool]
+    salvata: bool = True
 
 class WbsCreate(WbsBase):
     pass
