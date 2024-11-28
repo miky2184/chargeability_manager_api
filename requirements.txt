@@ -1,7 +1,8 @@
-fastapi==0.111.0
-uvicorn==0.32.1
-psycopg2-binary==2.9.10
-starlette==0.37.2
-typing-extensions==4.12.2
+fastapi==0.95.0
+uvicorn==0.21.1
+psycopg2-binary==2.9.9
+starlette==0.26.1
+typing_extensions==4.8.0
 python-dotenv==1.0.0
-pydantic==1.10.11
+pydantic==1.10.7
+pydantic_core==2.14.3
