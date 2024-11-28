@@ -1,7 +1,5 @@
-from typing import Optional
 from fastapi import FastAPI
 import psycopg2.extras as extras
-import os
 from fastapi.middleware.cors import CORSMiddleware
 from core.common_db import get_conn
 from starlette.responses import Response
