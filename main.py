@@ -76,6 +76,7 @@ def execute_query(schema_name: str, query: str, params: tuple = None) -> Respons
         Esegue una query SQL su uno schema specifico e restituisce una risposta JSON.
     """
     conn = None
+    result = None
     try:
         conn = get_conn(Config.DB_HOST, Config.DB_NAME, Config.DB_USER, Config.DB_PWD,
                         Config.DB_PORT)
