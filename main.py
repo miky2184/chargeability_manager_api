@@ -45,6 +45,30 @@ async def get_time_reports():
     SELECT * FROM report_tr_mm
     """)
 
+@app.get("/wbs", tags=['Chargeability Manager'])
+async def get_wbs():
+    return execute_query("chargeability_manager", """
+    SELECT wbs, wbs_type, project_name, budget_mm, budget_tot FROM wbs
+    """)
+
+@app.post("/wbs", tags=['Chargeability Manager'])
+async def post_wbs():
+    return execute_query("chargeability_manager", """
+    INSERT INTO wbs (wbs) VALUES (%s)
+    """, )
+
+@app.put("/wbs/{wbs_id}", tags=['Chargeability Manager'])
+async def put_wbs(wbs_id: str):
+    return execute_query("chargeability_manager", """
+    UPDATE report_tr_mm set wbs = %s where wbs = %s
+    """, (wbs_id, wbs_id))
+
+@app.delete("/wbs/{wbs_id}", tags=['Chargeability Manager'])
+async def delete_wbs(wbs_id: str):
+    return execute_query("chargeability_manager", """
+    DELETE FROM wbs WHERE wbs = %s
+    """, (wbs_id,))
+
 
 def execute_query(schema_name: str, query: str, params: tuple = None) -> Response:
     """
