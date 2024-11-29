@@ -1,3 +1,5 @@
+from distutils.command.config import config
+
 from psycopg2._psycopg import connection
 import psycopg2
 from typing import Optional
@@ -59,7 +61,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise credentials_exception
 
-    conn = get_conn("localhost", "mydb", "myuser", "mypassword", "5432")
+    conn = get_conn(Config.DB_HOST, Config.DB_NAME, Config.DB_USER, Config.DB_PWD, Config.DB_PORT)
     user = get_user_by_username(conn, username)
     if user is None:
         raise credentials_exception
