@@ -23,10 +23,10 @@ class ResourceBase(BaseModel):
     eid: str
     last_name: str
     first_name: str
-    level: Optional[str]
-    loaded_cost: Optional[float]
-    office: Optional[str]
-    dte: Optional[str]
+    level: str = None
+    loaded_cost: float = None
+    office: str = None
+    dte: str = None
     salvata: bool = True
 
 class ResourceCreate(ResourceBase):
