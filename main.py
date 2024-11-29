@@ -1,7 +1,12 @@
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import jwt, JWTError
+from typing import Optional
+from core.auth_config import create_access_token, verify_password, get_password_hash
 from fastapi import FastAPI
 import psycopg2.extras as extras
 from fastapi.middleware.cors import CORSMiddleware
-from core.common_db import get_conn
+from core.common_db import get_conn, create_user, get_user_by_username, get_current_user
 from starlette.responses import Response
 import subprocess
 import logging
@@ -10,6 +15,7 @@ from datetime import date
 from decimal import Decimal
 from core.config import Config
 from model.request import schemas
+from core.auth_config import SECRET_KEY, ALGORITHM
 
 app = FastAPI()
 app.add_middleware(
@@ -23,6 +29,13 @@ app.add_middleware(
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=Config.LOG_LEVEL, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%a, %d %b %Y %H:%M:%S', filename=Config.LOG_PATH, filemode='a')
 
+# OAuth2 schema
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def get_db_connection():
+    return get_conn(Config.DB_HOST, Config.DB_NAME, Config.DB_USER, Config.DB_PWD,
+                        Config.DB_PORT)
+
 # Funzione per convertire oggetti non serializzabili
 def default_converter(obj):
     if isinstance(obj, Decimal):
@@ -31,8 +44,55 @@ def default_converter(obj):
         return obj.isoformat()  # Converte date in stringa 'YYYY-MM-DD'
     raise TypeError(f"Type {type(obj)} not serializable")
 
+@app.post("/token")
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    conn = get_db_connection()
+    user = get_user_by_username(conn, form_data.username)
+    if not user or not verify_password(form_data.password, user["hashed_password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token = create_access_token(data={"sub": user["username"]})
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@app.post("/register")
+async def register(username: str, email: str, password: str, full_name: Optional[str] = None):
+    conn = get_db_connection()
+    hashed_password = get_password_hash(password)
+    user_id = create_user(conn, username, email, hashed_password, full_name)
+    return {"id": user_id, "message": "User created successfully"}
+
+@app.get("/users/me")
+async def read_users_me(token: str = Depends(oauth2_scheme)):
+    conn = get_db_connection()
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        user = get_user_by_username(conn, username)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        return user
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
 @app.get("/forecast", tags=['Chargeability Manager'])
-async def get_forecast():
+async def get_forecast(current_user: dict = Depends(get_current_user)):
     return execute_query("chargeability_manager", """
             SELECT fiscal_year, yy_cal, mm_cal, fortnight, eid, work_hh, tot_hour, chg, hh_chg, hh_no_chg, calc_meeting_time, hh_no_chg_to_assign
              FROM chargeability_manager.check_forecast;

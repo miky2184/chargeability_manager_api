@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
+from core.auth_config import verify_password
 
 class WbsBase(BaseModel):
     wbs: str
@@ -38,3 +39,26 @@ class ResourceUpdate(ResourceBase):
 class ResourceResponse(ResourceBase):
     class Config:
         orm_mode = True
+
+
+class User(BaseModel):
+    username: str
+    email: Optional[str] = None
+    full_name: Optional[str] = None
+    disabled: Optional[bool] = None
+
+class UserInDB(User):
+    hashed_password: str
+
+def get_user(db, username: str):
+    if username in db:
+        user_dict = db[username]
+        return UserInDB(**user_dict)
+
+def authenticate_user(db, username: str, password: str):
+    user = get_user(db, username)
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user

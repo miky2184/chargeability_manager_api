@@ -11,3 +11,4 @@ class Config:
     DB_PORT = os.getenv("DB_PORT")
     LOG_PATH = os.getenv("LOG_PATH")
     LOG_LEVEL = os.getenv("LOG_LEVEL")
+    SECRETKEY = os.getenv("SECRETKEY")
