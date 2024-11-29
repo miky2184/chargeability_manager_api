@@ -74,7 +74,7 @@ async def delete_wbs(wbs_id: str):
 @app.get("/resources", tags=['Chargeability Manager'])
 async def get_resources():
     return execute_query("chargeability_manager", """
-    select eid, last_name , first_name , "level" , loaded_cost , office , dte from resources r 
+    select eid, last_name , first_name , "level" , loaded_cost , office , dte , true as salvata from resources r 
     """, exec_ddl=False)
 
 @app.post("/resources", tags=['Chargeability Manager'])
