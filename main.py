@@ -43,7 +43,7 @@ def default_converter(obj):
         return obj.isoformat()  # Converte date in stringa 'YYYY-MM-DD'
     raise TypeError(f"Type {type(obj)} not serializable")
 
-@app.post("/token")
+@app.post("/token", include_in_schema=False)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     conn = get_db_connection()
     user = get_user_by_username(conn, form_data.username)
@@ -56,14 +56,14 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     access_token = create_access_token(data={"sub": user["username"]})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.post("/register")
+@app.post("/register", include_in_schema=False)
 async def register(user: schemas.UserRegister):
     conn = get_db_connection()
     hashed_password = get_password_hash(user.password)
     user_id = create_user(conn, user.username, user.email, hashed_password, user.full_name)
     return {"id": user_id, "message": "User created successfully"}
 
-@app.get("/users/me")
+@app.get("/users/me", include_in_schema=False)
 async def read_users_me(token: str = Depends(oauth2_scheme)):
     conn = get_db_connection()
     try:
