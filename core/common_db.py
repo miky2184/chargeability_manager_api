@@ -2,6 +2,11 @@ from psycopg2._psycopg import connection
 import psycopg2
 from typing import Optional
 from core.auth_config import *
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt, JWTError
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def get_conn(db_host: str, db_name: str, db_user: str, db_pwd: str, db_port: str) -> connection:
     return psycopg2.connect(

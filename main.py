@@ -3,7 +3,6 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt, JWTError
 from typing import Optional
 from core.auth_config import create_access_token, verify_password, get_password_hash
-from fastapi import FastAPI
 import psycopg2.extras as extras
 from fastapi.middleware.cors import CORSMiddleware
 from core.common_db import get_conn, create_user, get_user_by_username, get_current_user
