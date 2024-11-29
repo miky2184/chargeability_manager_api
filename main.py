@@ -19,10 +19,10 @@ from core.auth_config import SECRET_KEY, ALGORITHM
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
-    allow_credentials=False,
+    allow_origins=["*"],  # Cambia con i domini permessi
+    allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 logger = logging.getLogger(__name__)
