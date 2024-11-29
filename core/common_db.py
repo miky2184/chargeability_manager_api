@@ -19,7 +19,7 @@ def get_conn(db_host: str, db_name: str, db_user: str, db_pwd: str, db_port: str
     )
 
 def get_user_by_username(conn: connection, username: str) -> Optional[dict]:
-    query = "SELECT * FROM users WHERE username = %s"
+    query = "SELECT * FROM chargeability_manager.users WHERE username = %s"
     with conn.cursor() as cur:
         cur.execute(query, (username,))
         user = cur.fetchone()
