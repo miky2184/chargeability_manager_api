@@ -31,19 +31,27 @@ def default_converter(obj):
         return obj.isoformat()  # Converte date in stringa 'YYYY-MM-DD'
     raise TypeError(f"Type {type(obj)} not serializable")
 
+@app.get("/forecast", tags=['Chargeability Manager'])
+async def get_forecast():
+    return execute_query("chargeability_manager", """
+            SELECT fiscal_year, yy_cal, mm_cal, fortnight, eid, work_hh, tot_hour, chg, hh_chg, hh_no_chg, calc_meeting_time, hh_no_chg_to_assign
+             FROM chargeability_manager.check_forecast;
+            """, exec_ddl=False)
+
 
 @app.get("/chargeability", tags=['Chargeability Manager'])
 async def get_chargeability():
     return execute_query("chargeability_manager", """
             SELECT eid, fiscal_year, yy_cal, mm_cal, tot_hours, work_hh, work_hh_chg, work_hh_nochg, work_hh_no_impact, chg_mm, chg_yy
-            FROM chargeability_manager.chg_all;
+              FROM chg_all;
             """, exec_ddl=False)
 
 
 @app.get("/time-reports", tags=['Chargeability Manager'])
 async def get_time_reports():
     return execute_query("chargeability_manager", """
-    SELECT eid, wbs, fiscal_year, yy_cal, mm_cal, fortnight, work_hh, fl_forecast FROM time_report
+    SELECT eid, wbs, fiscal_year, yy_cal, mm_cal, fortnight, work_hh, fl_forecast 
+      FROM time_report
     """, exec_ddl=False)
 
 @app.get("/wbs", tags=['Chargeability Manager'])
