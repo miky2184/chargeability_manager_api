@@ -18,3 +18,23 @@ class WbsUpdate(WbsBase):
 class WbsResponse(WbsBase):
     class Config:
         orm_mode = True
+
+class ResourceBase(BaseModel):
+    eid: str
+    last_name: str
+    first_name: str
+    level: Optional[str]
+    loaded_cost: Optional[float]
+    office: Optional[str]
+    dte: Optional[str]
+    salvata: bool = True
+
+class ResourceCreate(ResourceBase):
+    pass
+
+class ResourceUpdate(ResourceBase):
+    pass
+
+class ResourceResponse(ResourceBase):
+    class Config:
+        orm_mode = True

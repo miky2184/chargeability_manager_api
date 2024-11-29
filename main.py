@@ -71,6 +71,33 @@ async def delete_wbs(wbs_id: str):
     DELETE FROM wbs WHERE wbs = %s
     """, (wbs_id,))
 
+@app.get("/resources", tags=['Chargeability Manager'])
+async def get_resources():
+    return execute_query("chargeability_manager", """
+    select eid, last_name , first_name , "level" , loaded_cost , office , dte from resources r 
+    """, exec_ddl=False)
+
+@app.post("/resources", tags=['Chargeability Manager'])
+async def post_resources(resource: schemas.ResourceCreate):
+    return execute_query("chargeability_manager", """
+    INSERT INTO resources (eid, last_name , first_name , "level" , loaded_cost , office , dte) VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """, (resource.eid, resource.last_name, resource.first_name, resource.level, resource.loaded_cost,
+          resource.office, resource.dte))
+
+@app.put("/resources/{resources_id}", tags=['Chargeability Manager'])
+async def put_resources(eid_id: str, resource: schemas.ResourceUpdate):
+    return execute_query("chargeability_manager", """
+    UPDATE resources set last_name = %s , first_name = %s, level = %s, loaded_cost = %s, office = %s, dte = %s 
+     where eid = %s
+    """, (resource.last_name, resource.first_name, resource.level, resource.loaded_cost,
+          resource.office, resource.dte, eid_id))
+
+@app.delete("/resources/{resources_id}", tags=['Chargeability Manager'])
+async def delete_resources(eid_id: str):
+    return execute_query("chargeability_manager", """
+    DELETE FROM resources WHERE eid = %s
+    """, (eid_id,))
+
 
 def execute_query(schema_name: str, query: str, params: tuple = None, exec_ddl: bool = True) -> Response:
     """
