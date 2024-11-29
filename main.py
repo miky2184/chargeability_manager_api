@@ -35,8 +35,8 @@ def default_converter(obj):
 @app.get("/chargeability", tags=['Chargeability Manager'])
 async def get_chargeability():
     return execute_query("chargeability_manager", """
-            SELECT eid, work_hh, chg, hh_no_chg_to_assign 
-            FROM check_forecast
+            SELECT eid, fiscal_year, yy_cal, mm_cal, tot_hours, work_hh, work_hh_chg, work_hh_nochg, work_hh_no_impact, chg_mm, chg_yy
+            FROM chargeability_manager.chg_all;
             """, exec_ddl=False)
 
 
