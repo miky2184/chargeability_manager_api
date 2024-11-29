@@ -57,10 +57,10 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.post("/register")
-async def register(username: str, email: str, password: str, full_name: Optional[str] = None):
+async def register(user: schemas.UserRegister):
     conn = get_db_connection()
-    hashed_password = get_password_hash(password)
-    user_id = create_user(conn, username, email, hashed_password, full_name)
+    hashed_password = get_password_hash(user.password)
+    user_id = create_user(conn, user.username, user.email, hashed_password, user.full_name)
     return {"id": user_id, "message": "User created successfully"}
 
 @app.get("/users/me")

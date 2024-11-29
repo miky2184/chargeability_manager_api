@@ -62,3 +62,10 @@ def authenticate_user(db, username: str, password: str):
     if not verify_password(password, user.hashed_password):
         return False
     return user
+
+# Modello di input per la registrazione
+class UserRegister(BaseModel):
+    username: str
+    password: str
+    email: str
+    full_name: str
