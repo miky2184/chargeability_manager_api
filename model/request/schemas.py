@@ -23,7 +23,7 @@ class ResourceBase(BaseModel):
     eid: str
     last_name: str
     first_name: str
-    level: str = None
+    level: float = None
     loaded_cost: float = None
     office: str = None
     dte: str = None
