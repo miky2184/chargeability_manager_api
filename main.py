@@ -43,7 +43,7 @@ async def get_chargeability():
 @app.get("/time-reports", tags=['Chargeability Manager'])
 async def get_time_reports():
     return execute_query("chargeability_manager", """
-    SELECT * FROM report_tr_mm
+    SELECT eid, wbs, fiscal_year, yy_cal, mm_cal, fortnigh, work_hh, fl_forecast FROM time_report
     """, exec_ddl=False)
 
 @app.get("/wbs", tags=['Chargeability Manager'])
