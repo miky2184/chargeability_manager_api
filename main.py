@@ -99,7 +99,7 @@ async def get_forecast(current_user: dict = Depends(get_current_user)):
 
 
 @app.get("/chargeability", tags=['Chargeability Manager'])
-async def get_chargeability():
+async def get_chargeability(current_user: dict = Depends(get_current_user)):
     return execute_query("chargeability_manager", """
             SELECT eid, fiscal_year, yy_cal, mm_cal, tot_hours, work_hh, work_hh_chg, work_hh_nochg, work_hh_no_impact, chg_mm, chg_yy
               FROM chg_all;
@@ -107,52 +107,52 @@ async def get_chargeability():
 
 
 @app.get("/time-reports", tags=['Chargeability Manager'])
-async def get_time_reports():
+async def get_time_reports(current_user: dict = Depends(get_current_user)):
     return execute_query("chargeability_manager", """
     SELECT eid, wbs, fiscal_year, yy_cal, mm_cal, fortnight, work_hh, fl_forecast 
       FROM time_report
     """, exec_ddl=False)
 
 @app.get("/wbs", tags=['Chargeability Manager'])
-async def get_wbs():
+async def get_wbs(current_user: dict = Depends(get_current_user)):
     return execute_query("chargeability_manager", """
     SELECT wbs, wbs_type, project_name, budget_mm, budget_tot, true as salvata FROM wbs
     """, exec_ddl=False)
 
 @app.post("/wbs", tags=['Chargeability Manager'])
-async def post_wbs(wbs: schemas.WbsCreate):
+async def post_wbs(wbs: schemas.WbsCreate, current_user: dict = Depends(get_current_user)):
     return execute_query("chargeability_manager", """
     INSERT INTO wbs (wbs, wbs_type, project_name, budget_mm, budget_tot) VALUES (%s, %s, %s, %s, %s)
     """, (wbs.wbs, wbs.wbs_type, wbs.project_name, wbs.budget_mm, wbs.budget_tot))
 
 @app.put("/wbs/{wbs_id}", tags=['Chargeability Manager'])
-async def put_wbs(wbs_id: str, wbs: schemas.WbsUpdate):
+async def put_wbs(wbs_id: str, wbs: schemas.WbsUpdate, current_user: dict = Depends(get_current_user)):
     return execute_query("chargeability_manager", """
     UPDATE wbs set wbs_type = %s , project_name = %s, budget_mm = %s, budget_tot = %s 
      where wbs = %s
     """, (wbs.wbs_type, wbs.project_name, wbs.budget_mm, wbs.budget_tot, wbs_id))
 
 @app.delete("/wbs/{wbs_id}", tags=['Chargeability Manager'])
-async def delete_wbs(wbs_id: str):
+async def delete_wbs(wbs_id: str, current_user: dict = Depends(get_current_user)):
     return execute_query("chargeability_manager", """
     DELETE FROM wbs WHERE wbs = %s
     """, (wbs_id,))
 
 @app.get("/resources", tags=['Chargeability Manager'])
-async def get_resources():
+async def get_resources(current_user: dict = Depends(get_current_user)):
     return execute_query("chargeability_manager", """
     select eid, last_name , first_name , "level" , loaded_cost , office , dte , true as salvata from resources r 
     """, exec_ddl=False)
 
 @app.post("/resources", tags=['Chargeability Manager'])
-async def post_resources(resource: schemas.ResourceCreate):
+async def post_resources(resource: schemas.ResourceCreate, current_user: dict = Depends(get_current_user)):
     return execute_query("chargeability_manager", """
     INSERT INTO resources (eid, last_name , first_name , "level" , loaded_cost , office , dte) VALUES (%s, %s, %s, %s, %s, %s, %s)
     """, (resource.eid, resource.last_name, resource.first_name, resource.level, resource.loaded_cost,
           resource.office, resource.dte))
 
 @app.put("/resources/{resources_id}", tags=['Chargeability Manager'])
-async def put_resources(resources_id: str, resource: schemas.ResourceUpdate):
+async def put_resources(resources_id: str, resource: schemas.ResourceUpdate, current_user: dict = Depends(get_current_user)):
     return execute_query("chargeability_manager", """
     UPDATE resources set last_name = %s , first_name = %s, level = %s, loaded_cost = %s, office = %s, dte = %s 
      where eid = %s
@@ -160,7 +160,7 @@ async def put_resources(resources_id: str, resource: schemas.ResourceUpdate):
           resource.office, resource.dte, resources_id))
 
 @app.delete("/resources/{resources_id}", tags=['Chargeability Manager'])
-async def delete_resources(resources_id: str):
+async def delete_resources(resources_id: str, current_user: dict = Depends(get_current_user)):
     return execute_query("chargeability_manager", """
     DELETE FROM resources WHERE eid = %s
     """, (resources_id,))
